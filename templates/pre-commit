@@ -4,27 +4,27 @@ import os
 import commands
 import sys
 import subprocess
-import psutil
+#import psutil
 
 def hook_func():
     sys.stdin = open("/dev/tty")
     
-    cmdline = '\x00'.join(psutil.Process(os.getppid()).cmdline)
+    #cmdline = '\x00'.join(psutil.Process(os.getppid()).cmdline)
 
-    if '\x00--author' in cmdline:
-        print "skip the credential process on git-commit-checker"
-        return 0
+    #if '\x00--author' in cmdline:
+    #    print "skip the credential process on git-commit-checker"
+    #    return 0
     
     name = commands.getoutput("git config --get user.name")
     address = commands.getoutput("git config --get user.email")
-    identity = ""
-    while not identity in ("y", "n"):
+    identity = "nan"
+    while not identity in ("", "Y", "y", "N", "n"):
         print "Author = %s <%s>" % (name, address)
-        identity = raw_input("Do you want to me to keep it this way? [y/n] ")
+        identity = raw_input("Do you want to me to keep it this way? [Y/n] ")
 
-    if identity == "n":
-        new_name = raw_input("Username:")
-        new_address = raw_input("Email:")
+    if (identity == "N" or identity == "n"):
+        new_name = raw_input("Username: ")
+        new_address = raw_input("Email: ")
         os.system("git config user.name \"%s\"" % new_name)
         os.system("git config user.email \"%s\"" % new_address)
         print "git-config update successfully"
@@ -34,4 +34,3 @@ def hook_func():
     return 0
 
 sys.exit(hook_func())
- 
